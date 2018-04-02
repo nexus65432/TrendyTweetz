@@ -21,7 +21,7 @@ Write an app that allows a user to view tweets for a set of keywords with real-t
 
 - Added ViewModels components to subscribe to the database and populate UI (TODO: Need to add full functionality)
 
-#### Technologies used
+#### Libraries used
 
 - Android Recyclerview
 - Room datbase to store user tweets
