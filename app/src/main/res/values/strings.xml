@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TrendyTweetz</string>
+
+    <string name="twitter_login">Login</string>
+
+    <string name="loading_tweets">Loading...</string>
+
+    <string name="actionbar_title">"Trendy Tweets"</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search Tweets</string>
+
+    <string name="error_message">"No results available"</string>
+
+</resources>

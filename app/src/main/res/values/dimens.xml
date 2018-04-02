@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="user_image_size">55dp</dimen>
+
+    <dimen name="twitter_footer_icon_size">20dp</dimen>
+
+
+    <dimen name="twitter_username_size">16sp</dimen>
+    <dimen name="twitter_message_size">16sp</dimen>
+
+</resources>
