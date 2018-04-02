@@ -1,4 +1,4 @@
-# Android exercise
+# Project
 Write an app that allows a user to view tweets for a set of keywords with real-time updates.
 
 ### Available features
