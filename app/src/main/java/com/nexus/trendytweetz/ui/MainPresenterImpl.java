@@ -95,7 +95,7 @@ public class MainPresenterImpl implements MainPresenter, DatabaseListener {
         Log.d(TAG, "getTweetsFromTableWithSearchKey " + input);
 
         mObservable = Observable.just(input)
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .map(new Function<String, List<StatusesItem>>() {
                     @Override
                     public List<StatusesItem> apply(String newTweets) {
@@ -148,7 +148,7 @@ public class MainPresenterImpl implements MainPresenter, DatabaseListener {
         Log.d(TAG, "loadTweetsFromDatabase " + input);
 
         mObservable = Observable.just(input)
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .map(new Function<String, List<StatusesItem>>() {
                     @Override
                     public List<StatusesItem> apply(String newTweets) {
@@ -246,7 +246,7 @@ public class MainPresenterImpl implements MainPresenter, DatabaseListener {
         Log.d(TAG, "getTweetsWithHashTagFromServer " + hashTag);
         mMainView.loading(R.string.loading_tweets);
         mCompositeDisposable.add(RetrofitService.getInstance().getSearchResults(hashTag)
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(getLatestTweetsObserver()));
     }
