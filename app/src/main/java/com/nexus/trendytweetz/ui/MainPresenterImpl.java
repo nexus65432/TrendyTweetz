@@ -1,6 +1,7 @@
 package com.nexus.trendytweetz.ui;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -10,6 +11,7 @@ import com.nexus.trendytweetz.datamodel.StatusesItem;
 import com.nexus.trendytweetz.listeners.Scheduler;
 import com.nexus.trendytweetz.network.RetrofitService;
 import com.nexus.trendytweetz.R;
+import com.nexus.trendytweetz.network.TweetScheduler;
 import com.nexus.trendytweetz.utils.TweetTimeComparator;
 import com.nexus.trendytweetz.entity.AppDatabase;
 import com.nexus.trendytweetz.entity.Tweetz;
@@ -305,6 +307,16 @@ public class MainPresenterImpl implements MainPresenter, Scheduler, DatabaseList
     }
 
     @Override
+    public void schedulePolling(Context context, String hashTag) {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            schedulePollingForNewTweetsWithJobScheduler(context, hashTag);
+        } else {
+            schedulePollingForNewTweetsWithRxJava(hashTag);
+        }
+    }
+
+    @Override
     public void schedulePollingForNewTweetsWithRxJava(@NonNull final String hashTag) {
         Log.d(TAG, "schedulePollingForNewTweets ");
         if (TextUtils.isEmpty(hashTag)) {
@@ -323,7 +335,9 @@ public class MainPresenterImpl implements MainPresenter, Scheduler, DatabaseList
     }
 
     @Override
-    public void schedulePollingForNewTweetsWithJobScheduler(String hashTag) {
-
+    public void schedulePollingForNewTweetsWithJobScheduler(Context context, String hashTag) {
+        TweetScheduler.scheduleJob(context);
+        // We need to implement Eventbus to post messages receved from processing the data
+        // in this case we need to duplicate logic to get the new tweets.
     }
 }

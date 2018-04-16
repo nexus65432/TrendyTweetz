@@ -39,6 +39,12 @@
             android:name=".datautils.SearchSuggestionProvider"
             android:authorities="com.nexus.trendytweetz.datautils.SearchSuggestionProvider" />
 
+        <service
+            android:name=".network.TweetScheduler"
+            android:label="TweetScheduler"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
+        </service>
+
     </application>
 
 </manifest>
