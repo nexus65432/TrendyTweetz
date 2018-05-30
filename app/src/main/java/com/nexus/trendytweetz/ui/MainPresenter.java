@@ -22,12 +22,6 @@ public interface MainPresenter {
     void getTweetsWithHashTagFromServer(@NonNull String hashTag);
 
     /**
-     * Schedule polling for new tweets for the given hashTag
-     * @param hashTag
-     */
-    void schedulePollingForNewTweets(String hashTag);
-
-    /**
      * Sort new tweets based on the current list latest timestamp
      * @param latestTimeStamp
      * @param newList   list from adapter

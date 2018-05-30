@@ -1,14 +1,17 @@
 package com.nexus.trendytweetz.ui;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.nexus.trendytweetz.datamodel.SearchResponse;
 import com.nexus.trendytweetz.datamodel.StatusesItem;
+import com.nexus.trendytweetz.listeners.Scheduler;
 import com.nexus.trendytweetz.network.RetrofitService;
 import com.nexus.trendytweetz.R;
+import com.nexus.trendytweetz.network.TweetScheduler;
 import com.nexus.trendytweetz.utils.TweetTimeComparator;
 import com.nexus.trendytweetz.entity.AppDatabase;
 import com.nexus.trendytweetz.entity.Tweetz;
@@ -39,7 +42,7 @@ import io.reactivex.schedulers.Timed;
  * MainPresenter - Basic functionality of this class
  * DatabaseListener - Operations w.r.t database.
  */
-public class MainPresenterImpl implements MainPresenter, DatabaseListener {
+public class MainPresenterImpl implements MainPresenter, Scheduler, DatabaseListener {
 
     private static final String TAG = "MainPresenterImpl";
 
@@ -224,29 +227,11 @@ public class MainPresenterImpl implements MainPresenter, DatabaseListener {
     }
 
     @Override
-    public void schedulePollingForNewTweets(final String hashTag) {
-        Log.d(TAG, "schedulePollingForNewTweets ");
-        if (TextUtils.isEmpty(hashTag)) {
-            return;
-        }
-        mPollingObservable = Observable.interval(TWEET_INTERVAL, TimeUnit.SECONDS).timeInterval()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Timed<Long>>() {
-                    @Override
-                    public void accept(Timed<Long> longTimed) throws Exception {
-                        Log.d(TAG, "Poll For New Tweets " + hashTag);
-                        getTweetsWithHashTagFromServer(hashTag);
-                    }
-                });
-    }
-
-    @Override
     public void getTweetsWithHashTagFromServer(@NonNull String hashTag) {
         Log.d(TAG, "getTweetsWithHashTagFromServer " + hashTag);
         mMainView.loading(R.string.loading_tweets);
         mCompositeDisposable.add(RetrofitService.getInstance().getSearchResults(hashTag)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.single())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(getLatestTweetsObserver()));
     }
@@ -255,7 +240,7 @@ public class MainPresenterImpl implements MainPresenter, DatabaseListener {
         return new DisposableSingleObserver<SearchResponse>() {
             @Override
             public void onSuccess(SearchResponse value) {
-                Log.d(TAG, "getLatestTweetsObserver onSuccess ");
+                Log.d(TAG, "getLagetLatestTweetsObservertestTweetsObserver onSuccess ");
 
                 Tweetz tweetz = new Tweetz();
                 tweetz.setTweets(value.getStatusesItems());
@@ -319,5 +304,40 @@ public class MainPresenterImpl implements MainPresenter, DatabaseListener {
                         Log.d(TAG, "processNewTweets onComplete ");
                     }
                 });
+    }
+
+    @Override
+    public void schedulePolling(Context context, String hashTag) {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            schedulePollingForNewTweetsWithJobScheduler(context, hashTag);
+        } else {
+            schedulePollingForNewTweetsWithRxJava(hashTag);
+        }
+    }
+
+    @Override
+    public void schedulePollingForNewTweetsWithRxJava(@NonNull final String hashTag) {
+        Log.d(TAG, "schedulePollingForNewTweets ");
+        if (TextUtils.isEmpty(hashTag)) {
+            return;
+        }
+        mPollingObservable = Observable.interval(TWEET_INTERVAL, TimeUnit.SECONDS).timeInterval()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Timed<Long>>() {
+                    @Override
+                    public void accept(Timed<Long> longTimed) throws Exception {
+                        Log.d(TAG, "Poll For New Tweets " + hashTag);
+                        getTweetsWithHashTagFromServer(hashTag);
+                    }
+                });
+    }
+
+    @Override
+    public void schedulePollingForNewTweetsWithJobScheduler(Context context, String hashTag) {
+        TweetScheduler.scheduleJob(context);
+        // We need to implement Eventbus to post messages receved from processing the data
+        // in this case we need to duplicate logic to get the new tweets.
     }
 }

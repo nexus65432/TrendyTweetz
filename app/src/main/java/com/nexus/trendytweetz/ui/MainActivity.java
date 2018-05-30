@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity implements MainView, SearchView.O
             prepareForNewList();
             hideKeyboard();
             mMainPresenterImpl.getTweetsWithHashTagFromServer(query);
-            mMainPresenterImpl.schedulePollingForNewTweets(query);
+            mMainPresenterImpl.schedulePollingForNewTweetsWithRxJava(query);
         } else {
             // load from database when offline
             mMainPresenterImpl.getTweetsFromTableWithSearchKey(query);
